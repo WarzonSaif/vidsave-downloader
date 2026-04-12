@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader - Download from YouTube, Instagram, TikTok & More</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-inner">
+            <div class="nav-logo"><i class="fas fa-download"></i> VidSave</div>
+            <div class="nav-links">
+                <a href="#">YouTube</a>
+                <a href="#">Instagram</a>
+                <a href="#">TikTok</a>
+                <a href="#">Facebook</a>
+                <a href="#">Twitter</a>
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-inner">
+            <h1>Video Downloader</h1>
+            <p>Download videos from YouTube, Instagram, TikTok, Facebook, Twitter, Pinterest, Reddit, Vimeo, Twitch & more — Free, Fast, No Login</p>
+
+            <!-- INPUT BOX -->
+            <div class="search-box">
+                <button class="paste-btn" onclick="pasteFromClipboard()" title="Paste from clipboard">
+                    <i class="fas fa-paste"></i>
+                </button>
+                <input type="text" id="videoUrl" placeholder="Paste video link here and press Download..." autocomplete="off">
+                <button id="clearBtn" onclick="clearInput()" title="Clear"><i class="fas fa-times"></i></button>
+                <button id="downloadBtn" onclick="processVideo()">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+
+            <!-- MODE TOGGLE (Video/Audio) -->
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="videoModeBtn" onclick="setMode('video')">
+                    <i class="fas fa-video"></i> Video
+                </button>
+                <button class="mode-btn" id="audioModeBtn" onclick="setMode('audio')">
+                    <i class="fas fa-music"></i> Audio Only
+                </button>
+            </div>
+
+            <!-- PLATFORM PILLS -->
+            <div class="platform-pills">
+                <span><i class="fab fa-youtube"></i> YouTube</span>
+                <span><i class="fab fa-instagram"></i> Instagram</span>
+                <span><i class="fab fa-tiktok"></i> TikTok</span>
+                <span><i class="fab fa-facebook"></i> Facebook</span>
+                <span><i class="fab fa-twitter"></i> Twitter</span>
+                <span><i class="fab fa-pinterest"></i> Pinterest</span>
+                <span><i class="fab fa-reddit"></i> Reddit</span>
+                <span><i class="fab fa-vimeo-v"></i> Vimeo</span>
+                <span><i class="fab fa-twitch"></i> Twitch</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- LOADING -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Fetching video information...</p>
+    </div>
+
+    <!-- ERROR -->
+    <div id="error" class="error-box hidden">
+        <i class="fas fa-exclamation-circle"></i>
+        <p id="errorMessage">Something went wrong. Please try again.</p>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result" class="result-section hidden">
+        <div class="result-inner">
+
+            <!-- Video Preview -->
+            <div class="video-preview">
+                <img id="thumbnail" src="" alt="Video Thumbnail">
+                <div class="video-meta">
+                    <h3 id="videoTitle"></h3>
+                    <p id="videoDuration"><i class="fas fa-clock"></i> <span></span></p>
+                    <p id="videoPlatform"><i class="fas fa-globe"></i> <span></span></p>
+                </div>
+            </div>
+
+            <!-- Download Buttons (SSS style) -->
+            <div class="download-list" id="downloadList">
+                <!-- Filled by JS -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- DOWNLOAD HISTORY -->
+    <div id="historySection" class="history-section hidden">
+        <div class="history-inner">
+            <div class="history-header">
+                <h2><i class="fas fa-history"></i> Recent Downloads</h2>
+                <button class="clear-history-btn" onclick="clearHistory()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- HOW TO -->
+    <section class="how-to">
+        <div class="how-inner">
+            <h2>How to Download Videos</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h4>Copy the URL</h4>
+                    <p>Go to the video on any platform and copy its link</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h4>Paste the Link</h4>
+                    <p>Paste the copied link into the input field above</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h4>Download</h4>
+                    <p>Click the Download button and save to your device</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="features-section">
+        <div class="features-inner">
+            <h2>Why Use VidSave?</h2>
+            <div class="features-grid">
+                <div class="feat">
+                    <i class="fas fa-bolt"></i>
+                    <h4>Fast Downloads</h4>
+                    <p>Quick processing and high-speed downloads</p>
+                </div>
+                <div class="feat">
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>No Login Required</h4>
+                    <p>No account or registration needed</p>
+                </div>
+                <div class="feat">
+                    <i class="fas fa-hd"></i>
+                    <h4>HD Quality</h4>
+                    <p>Download in original HD quality</p>
+                </div>
+                <div class="feat">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h4>All Devices</h4>
+                    <p>Works on mobile, tablet and desktop</p>
+                </div>
+                <div class="feat">
+                    <i class="fas fa-ban"></i>
+                    <h4>No Watermark</h4>
+                    <p>Clean downloads with no watermarks</p>
+                </div>
+                <div class="feat">
+                    <i class="fas fa-infinity"></i>
+                    <h4>Unlimited</h4>
+                    <p>No limits on number of downloads</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <p>&copy; 2026 VidSave. For personal use only.</p>
+        <p>Please respect copyright laws and creators' rights.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

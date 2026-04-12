@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Video Download</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .video-info {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .video-info img {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .video-details h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .video-details p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .download-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .download-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .download-link:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4f8;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .idm-note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .idm-note strong {
+            color: #856404;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Direct Video Downloader</h1>
+        <p class="subtitle">Works with IDM, browser download managers, and direct links</p>
+        
+        <div class="input-group">
+            <label for="videoUrl">Video URL</label>
+            <input type="text" id="videoUrl" placeholder="Paste YouTube, Facebook, Instagram, TikTok, or Twitter URL">
+        </div>
+        
+        <button id="getLinksBtn" onclick="getDirectLinks()">Get Direct Download Links</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Fetching video information...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <div class="video-info">
+                <img id="thumbnail" src="" alt="Thumbnail">
+                <div class="video-details">
+                    <h3 id="videoTitle">Video Title</h3>
+                    <p id="videoInfo">Duration: -- | Platform: --</p>
+                </div>
+            </div>
+            
+            <h4 style="margin-bottom: 15px;">Direct Download Links:</h4>
+            <div class="download-links" id="downloadLinks">
+                <!-- Links will be added here -->
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📖 How to Download:</h3>
+            <ol>
+                <li>Paste the video URL above</li>
+                <li>Click "Get Direct Download Links"</li>
+                <li>Right-click on the download link</li>
+                <li>Select "Save link as..." or "Download with IDM"</li>
+                <li>Choose your save location</li>
+            </ol>
+        </div>
+        
+        <div class="idm-note">
+            <strong>💡 For IDM Users:</strong><br>
+            If you have Internet Download Manager installed, right-click the link and select 
+            "Download with IDM" or copy the link and paste it in IDM's "Add URL" dialog.
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        
+        async function getDirectLinks() {
+            const url = document.getElementById('videoUrl').value.trim();
+            
+            if (!url) {
+                alert('Please enter a video URL');
+                return;
+            }
+            
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('getLinksBtn').disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/info`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch video info');
+                }
+                
+                const data = await response.json();
+                showResults(data, url);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error: ' + error.message + '\n\nMake sure the server is running (python server.py)');
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('getLinksBtn').disabled = false;
+            }
+        }
+        
+        function showResults(data, url) {
+            document.getElementById('thumbnail').src = data.thumbnail || '';
+            document.getElementById('videoTitle').textContent = data.title || 'Unknown Title';
+            document.getElementById('videoInfo').textContent = 
+                `Duration: ${formatDuration(data.duration)} | Platform: ${capitalize(data.platform)}`;
+            
+            const linksContainer = document.getElementById('downloadLinks');
+            linksContainer.innerHTML = '';
+            
+            if (data.formats && data.formats.length > 0) {
+                data.formats.forEach(format => {
+                    const link = document.createElement('a');
+                    link.className = 'download-link';
+                    link.href = '#'; // Will be generated on click
+                    link.innerHTML = `
+                        <span>${format.quality} (${format.ext?.toUpperCase() || 'MP4'})</span>
+                        <span>⬇️</span>
+                    `;
+                    
+                    // On click, request download and get direct URL
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        startDownload(url, format.format_id, data.title);
+                    };
+                    
+                    linksContainer.appendChild(link);
+                });
+            } else {
+                linksContainer.innerHTML = '<p>No download links available</p>';
+            }
+            
+            document.getElementById('result').classList.add('show');
+        }
+        
+        async function startDownload(url, formatId, title) {
+            const btn = event.target.closest('.download-link');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Preparing download...</span><span>⏳</span>';
+            btn.style.pointerEvents = 'none';
+            
+            try {
+                // Request server to prepare download
+                const response = await fetch(`${API_URL}/api/download`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url, format_id: formatId })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                
+                // Get filename from header
+                const disposition = response.headers.get('content-disposition');
+                let filename = title ? `${title.substring(0, 50)}.mp4` : 'video.mp4';
+                if (disposition) {
+                    const match = disposition.match(/filename="(.+)"/);
+                    if (match) filename = match[1];
+                }
+                
+                // Create blob URL for direct download
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                
+                // Create download link
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                
+                // Show options
+                const choice = confirm(
+                    'Download ready!\n\n' +
+                    'Click OK to download directly\n' +
+                    'Click Cancel to copy link for IDM'
+                );
+                
+                if (choice) {
+                    // Direct download
+                    a.click();
+                } else {
+                    // Copy link for IDM (in real implementation, you'd provide a direct URL)
+                    alert('For IDM:\n1. Open IDM\n2. Click "Add URL"\n3. Paste: ' + url);
+                }
+                
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(downloadUrl);
+                
+                btn.innerHTML = '<span>✅ Downloaded!</span><span>✓</span>';
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Download failed: ' + error.message);
+                btn.innerHTML = originalText;
+            } finally {
+                btn.style.pointerEvents = 'auto';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 3000);
+            }
+        }
+        
+        function formatDuration(seconds) {
+            if (!seconds) return 'Unknown';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function capitalize(str) {
+            return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+        }
+    </script>
+</body>
+</html>
