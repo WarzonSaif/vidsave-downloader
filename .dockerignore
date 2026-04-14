@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+.DS_Store
+.env
+downloads/
+*.part
+ffmpeg-release-essentials.zip
+ffmpeg/
+.vscode
+.idea
+README.md
